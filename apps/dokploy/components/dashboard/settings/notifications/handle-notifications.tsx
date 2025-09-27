@@ -50,6 +50,7 @@ const notificationBaseSchema = z.object({
 	dokployRestart: z.boolean().default(false),
 	dockerCleanup: z.boolean().default(false),
 	serverThreshold: z.boolean().default(false),
+	updateAvailable: z.boolean().default(false),
 });
 
 export const notificationSchema = z.discriminatedUnion("type", [
@@ -225,6 +226,7 @@ export const HandleNotifications = ({ notificationId }: Props) => {
 					name: notification.name,
 					type: notification.notificationType,
 					serverThreshold: notification.serverThreshold,
+					updateAvailable: notification.updateAvailable,
 				});
 			} else if (notification.notificationType === "telegram") {
 				form.reset({
@@ -239,6 +241,7 @@ export const HandleNotifications = ({ notificationId }: Props) => {
 					name: notification.name,
 					dockerCleanup: notification.dockerCleanup,
 					serverThreshold: notification.serverThreshold,
+					updateAvailable: notification.updateAvailable,
 				});
 			} else if (notification.notificationType === "discord") {
 				form.reset({
@@ -252,6 +255,7 @@ export const HandleNotifications = ({ notificationId }: Props) => {
 					name: notification.name,
 					dockerCleanup: notification.dockerCleanup,
 					serverThreshold: notification.serverThreshold,
+					updateAvailable: notification.updateAvailable,
 				});
 			} else if (notification.notificationType === "email") {
 				form.reset({
@@ -269,6 +273,7 @@ export const HandleNotifications = ({ notificationId }: Props) => {
 					name: notification.name,
 					dockerCleanup: notification.dockerCleanup,
 					serverThreshold: notification.serverThreshold,
+					updateAvailable: notification.updateAvailable,
 				});
 			} else if (notification.notificationType === "gotify") {
 				form.reset({
@@ -283,6 +288,7 @@ export const HandleNotifications = ({ notificationId }: Props) => {
 					serverUrl: notification.gotify?.serverUrl,
 					name: notification.name,
 					dockerCleanup: notification.dockerCleanup,
+					updateAvailable: notification.updateAvailable,
 				});
 			} else if (notification.notificationType === "ntfy") {
 				form.reset({
@@ -297,6 +303,7 @@ export const HandleNotifications = ({ notificationId }: Props) => {
 					serverUrl: notification.ntfy?.serverUrl,
 					name: notification.name,
 					dockerCleanup: notification.dockerCleanup,
+					updateAvailable: notification.updateAvailable,
 				});
 			}
 		} else {
@@ -321,6 +328,7 @@ export const HandleNotifications = ({ notificationId }: Props) => {
 			databaseBackup,
 			dockerCleanup,
 			serverThreshold,
+			updateAvailable,
 		} = data;
 		let promise: Promise<unknown> | null = null;
 		if (data.type === "slack") {
@@ -336,6 +344,7 @@ export const HandleNotifications = ({ notificationId }: Props) => {
 				slackId: notification?.slackId || "",
 				notificationId: notificationId || "",
 				serverThreshold: serverThreshold,
+				updateAvailable: updateAvailable,
 			});
 		} else if (data.type === "telegram") {
 			promise = telegramMutation.mutateAsync({
@@ -351,6 +360,7 @@ export const HandleNotifications = ({ notificationId }: Props) => {
 				notificationId: notificationId || "",
 				telegramId: notification?.telegramId || "",
 				serverThreshold: serverThreshold,
+				updateAvailable: updateAvailable,
 			});
 		} else if (data.type === "discord") {
 			promise = discordMutation.mutateAsync({
@@ -365,6 +375,7 @@ export const HandleNotifications = ({ notificationId }: Props) => {
 				notificationId: notificationId || "",
 				discordId: notification?.discordId || "",
 				serverThreshold: serverThreshold,
+				updateAvailable: updateAvailable,
 			});
 		} else if (data.type === "email") {
 			promise = emailMutation.mutateAsync({
@@ -383,6 +394,7 @@ export const HandleNotifications = ({ notificationId }: Props) => {
 				notificationId: notificationId || "",
 				emailId: notification?.emailId || "",
 				serverThreshold: serverThreshold,
+				updateAvailable: updateAvailable,
 			});
 		} else if (data.type === "gotify") {
 			promise = gotifyMutation.mutateAsync({
@@ -398,6 +410,7 @@ export const HandleNotifications = ({ notificationId }: Props) => {
 				decoration: data.decoration,
 				notificationId: notificationId || "",
 				gotifyId: notification?.gotifyId || "",
+				updateAvailable: updateAvailable,
 			});
 		} else if (data.type === "ntfy") {
 			promise = ntfyMutation.mutateAsync({
@@ -413,6 +426,7 @@ export const HandleNotifications = ({ notificationId }: Props) => {
 				dockerCleanup: dockerCleanup,
 				notificationId: notificationId || "",
 				ntfyId: notification?.ntfyId || "",
+				updateAvailable: updateAvailable,
 			});
 		}
 
@@ -1126,6 +1140,29 @@ export const HandleNotifications = ({ notificationId }: Props) => {
 													<FormDescription>
 														Trigger the action when the server threshold is
 														reached.
+													</FormDescription>
+												</div>
+												<FormControl>
+													<Switch
+														checked={field.value}
+														onCheckedChange={field.onChange}
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+								)}
+
+								{!isCloud && (
+									<FormField
+										control={form.control}
+										name="updateAvailable"
+										render={({ field }) => (
+											<FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm gap-2">
+												<div className="space-y-0.5">
+													<FormLabel>Update Available</FormLabel>
+													<FormDescription>
+														Trigger when a new Dokploy update is available.
 													</FormDescription>
 												</div>
 												<FormControl>

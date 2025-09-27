@@ -26,6 +26,7 @@ export const notifications = pgTable("notification", {
 	dokployRestart: boolean("dokployRestart").notNull().default(false),
 	dockerCleanup: boolean("dockerCleanup").notNull().default(false),
 	serverThreshold: boolean("serverThreshold").notNull().default(false),
+	updateAvailable: boolean("updateAvailable").notNull().default(false),
 	notificationType: notificationType("notificationType").notNull(),
 	createdAt: text("createdAt")
 		.notNull()
@@ -158,6 +159,7 @@ export const apiCreateSlack = notificationsSchema
 		appDeploy: true,
 		dockerCleanup: true,
 		serverThreshold: true,
+		updateAvailable: true,
 	})
 	.extend({
 		webhookUrl: z.string().min(1),
@@ -185,6 +187,7 @@ export const apiCreateTelegram = notificationsSchema
 		appDeploy: true,
 		dockerCleanup: true,
 		serverThreshold: true,
+		updateAvailable: true,
 	})
 	.extend({
 		botToken: z.string().min(1),
@@ -214,6 +217,7 @@ export const apiCreateDiscord = notificationsSchema
 		appDeploy: true,
 		dockerCleanup: true,
 		serverThreshold: true,
+		updateAvailable: true,
 	})
 	.extend({
 		webhookUrl: z.string().min(1),
@@ -244,6 +248,7 @@ export const apiCreateEmail = notificationsSchema
 		appDeploy: true,
 		dockerCleanup: true,
 		serverThreshold: true,
+		updateAvailable: true,
 	})
 	.extend({
 		smtpServer: z.string().min(1),
@@ -278,6 +283,7 @@ export const apiCreateGotify = notificationsSchema
 		name: true,
 		appDeploy: true,
 		dockerCleanup: true,
+		updateAvailable: true,
 	})
 	.extend({
 		serverUrl: z.string().min(1),
@@ -311,6 +317,7 @@ export const apiCreateNtfy = notificationsSchema
 		name: true,
 		appDeploy: true,
 		dockerCleanup: true,
+		updateAvailable: true,
 	})
 	.extend({
 		serverUrl: z.string().min(1),

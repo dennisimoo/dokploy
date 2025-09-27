@@ -862,4 +862,34 @@ export const settingsRouter = createTRPCRouter({
 		const ips = process.env.DOKPLOY_CLOUD_IPS?.split(",");
 		return ips;
 	}),
+
 });
+
+let updateCheckJobScheduled = false;
+let lastNotifiedVersion: string | null = null;
+
+export const initializeUpdateCheckJob = () => {
+	if (!IS_CLOUD && !updateCheckJobScheduled) {
+		const { scheduleJob } = require("node-schedule");
+
+		// Run daily at midnight
+		scheduleJob("update-check-job", "0 0 * * *", async () => {
+			try {
+				console.log("Running daily update check...");
+				const updateData = await getUpdateData();
+
+				if (updateData.updateAvailable && updateData.latestVersion && updateData.latestVersion !== lastNotifiedVersion) {
+					console.log(`New update available: ${getDokployImageTag()} → ${updateData.latestVersion}`);
+					const { sendUpdateAvailableNotifications } = await import("@dokploy/server");
+					await sendUpdateAvailableNotifications(getDokployImageTag(), updateData.latestVersion);
+					lastNotifiedVersion = updateData.latestVersion;
+				}
+			} catch (error) {
+				console.error("Daily update check failed:", error);
+			}
+		});
+
+		updateCheckJobScheduled = true;
+		console.log("Update check job scheduled to run daily at midnight");
+	}
+};

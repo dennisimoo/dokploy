@@ -20,6 +20,7 @@ import { setupDockerStatsMonitoringSocketServer } from "./wss/docker-stats";
 import { setupDrawerLogsWebSocketServer } from "./wss/drawer-logs";
 import { setupDeploymentLogsWebSocketServer } from "./wss/listen-deployment";
 import { setupTerminalWebSocketServer } from "./wss/terminal";
+import { initializeUpdateCheckJob } from "@/server/api/routers/settings";
 
 config({ path: ".env" });
 const PORT = Number.parseInt(process.env.PORT || "3000", 10);
@@ -54,6 +55,7 @@ void app.prepare().then(async () => {
 			await initSchedules();
 			await initVolumeBackupsCronJobs();
 			await sendDokployRestartNotifications();
+			initializeUpdateCheckJob();
 		}
 
 		if (IS_CLOUD && process.env.NODE_ENV === "production") {
